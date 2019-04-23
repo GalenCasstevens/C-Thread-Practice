@@ -1,33 +1,27 @@
 ﻿using System;
+using System.Net.Http;
+using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace ThreadPractice
 {
     public static class Program
     {
-        [ThreadStatic]
-        public static int _field;
         static void Main(string[] args)
         {
-            new Thread(() =>
-            {
-                for (int i = 0; i < 10; i++)
-                {
-                    _field++;
-                    Console.WriteLine("Thread A: {0}", _field);
-                }
-            }).Start();
-
-            new Thread(() =>
-            {
-                for (int i = 0; i < 10; i++)
-                {
-                    _field++;
-                    Console.WriteLine("Thread B: {0}", _field);
-                }
-            }).Start();
-
+            string result = DownloadContent().Result;
+            Console.WriteLine(result);
             Console.ReadKey();
+        }
+
+        public static async Task<string> DownloadContent()
+        {
+            using(HttpClient client = new HttpClient())
+            {
+                string result = await client.GetStringAsync("http://www.microsoft.com");
+                return result;
+            }
         }
     }
 }
